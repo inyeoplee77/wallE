@@ -24,7 +24,7 @@ errors = {}
 
 f = open("posts",'w')
 for page in pages:
-	r = requests.get(api + page + "/feed",params = para).json()
+	r = requests.get(api + page + "/posts",params = para).json()
 	posts[page] = []
 	if 'error' in r or 'paging' not in r:
 		print r.keys()
@@ -44,12 +44,12 @@ for page in pages:
 			#	print p['id'] + 'likes' + page
 		r = requests.get(r['paging']['next']).json()
 	
-	#people who liked the post   {user_id}/likes/{post_id} check if key 'data' empty or not
+
+	#people who liked the page   {user_id}/likes/{page_id} check if key 'data' empty or not
 	
-	#count the number of likes for the post
+	#count the number of likes for the page
 	r = requests.get(api+page+'?fields=likes',params=para).json()['likes']
 	print r
-	#and whether he or she liked the page
 	
 	
 	
