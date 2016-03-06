@@ -6,9 +6,21 @@ import urllib
 base = "http://djhpoem.co.kr"
 #/board/?c=3_product/3_5
 
-for p in range(1,23):
-	r = urllib.urlopen(base+ "/board/?c=3_product/3_5&p="+str(p)).read()	
-	tds = BeautifulSoup(r).find_all('td', "sbj")
-	for td in tds:
-		r = urllib.urlopen(base + td.find('a')['href']).read()
-		text = BeautifulSoup(r).select('div#vContent')[0].text
+
+def crawl_text(url,p):
+	for i in range(1,p):
+		r = urllib.urlopen(base+url+str(i)).read()	
+		tds = BeautifulSoup(r).find_all('td', "sbj")
+		for td in tds:
+			r = urllib.urlopen(base + td.find('a')['href']).read()
+			text = BeautifulSoup(r).select('div#vContent')
+			if not text:
+				continue	
+			text = BeautifulSoup(r).select('div#vContent')[0].text
+
+#poem
+crawl_text("/board/?c=3_product/3_5&p=",23)
+
+crawl_text("/board/?c=3_product/3_2&p=",10)
+#/board/?c=3_product/3_2&p=
+
