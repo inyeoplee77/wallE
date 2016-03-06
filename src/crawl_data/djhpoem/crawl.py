@@ -2,10 +2,9 @@ from bs4 import BeautifulSoup
 import urllib
 
 #f = open("data_djhpoem","w")
-#number = 51438
 base = "http://djhpoem.co.kr"
-#/board/?c=3_product/3_5
 
+board = "/board/?c=3_product/"
 
 def crawl_text(url,p):
 	for i in range(1,p):
@@ -19,8 +18,14 @@ def crawl_text(url,p):
 			text = BeautifulSoup(r).select('div#vContent')[0].text
 
 #poem
-crawl_text("/board/?c=3_product/3_5&p=",23)
+crawl_text(board + "3_5&p=",23)
+#prose
+crawl_text(board + "3_2&p=",10)
+#sing
+crawl_text(board + "3_4&p=",5)
+#
+crawl_text("/board/?c=5_letter/5_1&p=",14)
+#letter from poet
+crawl_text("/board/?c=5_letter/5_2&p=",20)
 
-crawl_text("/board/?c=3_product/3_2&p=",10)
-#/board/?c=3_product/3_2&p=
 
