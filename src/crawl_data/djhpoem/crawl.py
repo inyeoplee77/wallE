@@ -15,7 +15,7 @@ def crawl_text(url,p):
 			text = BeautifulSoup(r).select('div#vContent')
 			if not text:
 				continue	
-			text = BeautifulSoup(r).select('div#vContent')[0].text
+			text = text[0].text
 
 #poem
 crawl_text(board + "3_5&p=",23)
