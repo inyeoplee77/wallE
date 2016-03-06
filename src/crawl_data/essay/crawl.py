@@ -3,6 +3,7 @@ import urllib
 
 base = "http://essay.or.kr/gnu4/bbs/board.php"
 essay = "?bo_table=essay100"
+oversea = "?bo_table=overseasessay"
 #&page=2
 def crawl_text(url,p):
 	for i in range(1,p):
@@ -15,5 +16,7 @@ def crawl_text(url,p):
 				continue
 			text = text.text
 			print text
-#poem
+#essay100
 crawl_text(essay + "&page=",7)
+#oversea
+crawl_text(oversea + "&page=",5)
