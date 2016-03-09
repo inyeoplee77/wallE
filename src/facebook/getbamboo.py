@@ -31,7 +31,7 @@ count = 0
 nonkorean = re.compile('[^ 가-힣]+')
 hashtag = re.compile('#[가-힣\w0-9\S]+')
 nomean = re.compile('[ㄱ-ㅎ]+')
-print nomean.sub('','뭐야 이거')
+print nomean.sub('','뭐야 이거ㅋㅋㅋㅋ')
 for page in pages:
 	dir = pages[page].split('/')[-1]
 	if not os.path.exists(dir):
