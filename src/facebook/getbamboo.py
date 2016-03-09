@@ -26,12 +26,11 @@ likes_errors = []
 likes = {}
 count = 0
 
-
 #locale.setlocale(locale.LC_ALL,'')
 #[^ ㄱ-ㅎ|ㅏ-ㅣㅣ가-힣]+
 nonkorean = re.compile('[^ 가-힣]+')
 hashtag = re.compile('#[가-힣\w0-9\S]+')
-nomean = re.compile('[ㄱ-ㅎ]')
+nomean = re.compile('[ㄱ-ㅎ]+')
 print nomean.sub('','뭐야 이거')
 for page in pages:
 	dir = pages[page].split('/')[-1]
