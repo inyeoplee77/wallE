@@ -13,7 +13,7 @@ token = "CAAKOUxjp05kBAGv2nl1XKZBWBp7bfyStp2FhRTzJTV3xJZBObadaYBSDyEEGDTezs81Xof
 api = "https://graph.facebook.com/v2.5/"
 para = {'access_token' : token}
 
-f = open("bamboolist_test",'r')
+f = open("bamboolist",'r')
 
 pages = {}
 for line in f:
@@ -32,9 +32,11 @@ count = 0
 nonkorean = re.compile('[^ 가-힣]+')
 hashtag = re.compile('#[가-힣\w0-9\S]+')
 nomean = re.compile('[ㄱ-ㅎ]')
-print nomean.sub('','뭐야 이거')
+print pages
 for page in pages:
 	dir = pages[page].split('/')[-1]
+	print dir
+	count = 0
 	if not os.path.exists(dir):
 		os.makedirs(dir)
 	r = requests.get(api + page + "/posts",params = para).json()
@@ -43,7 +45,7 @@ for page in pages:
 		continue
 	while 'previos' in r['paging']:
 		r = requests.get(r['paging']['previous']).json()
-	while 'next' in r['paging']:
+	while 'paging' not in r.keys() or 'next' in r['paging']:
 		for p in r['data']:
 			f = open(dir+ '/' + p['id'],'w')
 			if 'message' not in p:
@@ -58,6 +60,8 @@ for page in pages:
 				continue
 			else:
 				likes[p['id']] = like['summary']['total_count']
+		if 'paging' not in r.keys():
+			break
 		r = requests.get(r['paging']['next']).json()
 		print '%d posts scrapped' % count
 			
