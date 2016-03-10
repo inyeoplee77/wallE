@@ -55,15 +55,33 @@ for page in pages:
 			message = ' '.join(nonkorean.sub('',hashtag.sub('',message)).split())
 			f.write(message.strip())
 			count += 1
-			like = requests.get(api + p['id'] + '/likes?summary=true',params = para).json()
-			if 'error' in like:
-				likes_errors.append(p['id']) 
-				continue
-			else:
-				likes[p['id']] = like['summary']['total_count']
+			try:
+                like = requests.get(api + p['id'] + '/likes?summary=true',params = para).json()
+                if 'error' in like:
+				    likes_errors.append(p['id']) 
+				    continue
+			    else:
+				    likes[p['id']] = like['summary']['total_count']
+            except ValueError as v:
+                print 'returned value is not json:' + v.strerror
+                print api + p['id'] + '/likes?summary=true'
+                continue
+			except requests.exceptions.ConnectionError as e:
+                print 'ConnectionFail:' + e.strerror
+                print api + p['id'] + '/likes?summary=true'
+                continue
 		if 'paging' not in r:
 			break
-		r = requests.get(r['paging']['next']).json()
+        try:
+		    r = requests.get(r['paging']['next']).json()
+        except ValueError as v:
+            print 'returned value is not json:' + v.strerror
+            print r['paging']['next']
+            continue
+        except requests.exceptions.ConnectionError as e:
+            print 'ConnectionFail:' + e.strerror
+            print r['paging']['next']
+            continue
 		print '%d posts scrapped' % count
 			
 for e in page_errors:
