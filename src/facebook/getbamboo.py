@@ -44,8 +44,10 @@ for page in pages:
 		continue
 	while 'previos' in r['paging']:
 		r = requests.get(r['paging']['previous']).json()
-	while 'paging' not in r.keys() or 'next' in r['paging']:
-		for p in r['data']:
+	while True:
+		if 'data' not in r:
+            break
+        for p in r['data']:
 			f = open(dir+ '/' + p['id'],'w')
 			if 'message' not in p:
 				continue
@@ -59,7 +61,7 @@ for page in pages:
 				continue
 			else:
 				likes[p['id']] = like['summary']['total_count']
-		if 'paging' not in r.keys():
+		if 'paging' not in r:
 			break
 		r = requests.get(r['paging']['next']).json()
 		print '%d posts scrapped' % count
