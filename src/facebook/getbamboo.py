@@ -22,7 +22,7 @@ for line in f:
 	pages[line[2]] = line[1]
 posts = {}
 page_errors = {}
-likes_errors = []
+likes_errors = {}
 likes = {}
 count = 0
 
@@ -58,7 +58,7 @@ for page in pages:
 			try:
                 like = requests.get(api + p['id'] + '/likes?summary=true',params = para).json()
                 if 'error' in like:
-				    likes_errors.append(p['id']) 
+				    likes_errors[p['id']] = like['error']['message']
 				    continue
 			    else:
 				    likes[p['id']] = like['summary']['total_count']
@@ -85,9 +85,9 @@ for page in pages:
 		print '%d posts scrapped' % count
 			
 for e in page_errors:
-	print 'Error occurred while processing ' + e + 'page :' + page_errors[e]
+	print 'Error occurred while processing ' + e + ' page :' + page_errors[e]
 for e in likes_errors:
-	print 'Error occurred while obtaining likes on post' + e
+	print 'Error occurred while obtaining likes on :' + e + ' post : ' + likes_errors[e] 
 f = open('likes','w')
 for like in likes:
 	f.write(like+' ' + likes[like] + '\n')
