@@ -22,7 +22,7 @@ for line in f:
 	pages[line[2]] = line[1]
 posts = {}
 page_errors = {}
-likes_errors = []
+likes_errors = {}
 likes = {}
 count = 0
 
@@ -44,8 +44,10 @@ for page in pages:
 		continue
 	while 'previos' in r['paging']:
 		r = requests.get(r['paging']['previous']).json()
-	while 'paging' not in r.keys() or 'next' in r['paging']:
-		for p in r['data']:
+	while True:
+		if 'data' not in r:
+            break
+        for p in r['data']:
 			f = open(dir+ '/' + p['id'],'w')
 			if 'message' not in p:
 				continue
@@ -53,21 +55,39 @@ for page in pages:
 			message = ' '.join(nonkorean.sub('',hashtag.sub('',message)).split())
 			f.write(message.strip())
 			count += 1
-			like = requests.get(api + p['id'] + '/likes?summary=true',params = para).json()
-			if 'error' in like:
-				likes_errors.append(p['id']) 
-				continue
-			else:
-				likes[p['id']] = like['summary']['total_count']
-		if 'paging' not in r.keys():
+			try:
+                like = requests.get(api + p['id'] + '/likes?summary=true',params = para).json()
+                if 'error' in like:
+				    likes_errors[p['id']] = like['error']['message']
+				    continue
+			    else:
+				    likes[p['id']] = like['summary']['total_count']
+            except ValueError as v:
+                print 'returned value is not json:' + v.strerror
+                print api + p['id'] + '/likes?summary=true'
+                continue
+			except requests.exceptions.ConnectionError as e:
+                print 'ConnectionFail:' + e.strerror
+                print api + p['id'] + '/likes?summary=true'
+                continue
+		if 'paging' not in r:
 			break
-		r = requests.get(r['paging']['next']).json()
+        try:
+		    r = requests.get(r['paging']['next']).json()
+        except ValueError as v:
+            print 'returned value is not json:' + v.strerror
+            print r['paging']['next']
+            continue
+        except requests.exceptions.ConnectionError as e:
+            print 'ConnectionFail:' + e.strerror
+            print r['paging']['next']
+            continue
 		print '%d posts scrapped' % count
 			
 for e in page_errors:
-	print 'Error occurred while processing ' + e + 'page :' + page_errors[e]
+	print 'Error occurred while processing ' + e + ' page :' + page_errors[e]
 for e in likes_errors:
-	print 'Error occurred while obtaining likes on post' + e
+	print 'Error occurred while obtaining likes on :' + e + ' post : ' + likes_errors[e] 
 f = open('likes','w')
 for like in likes:
 	f.write(like+' ' + likes[like] + '\n')
