@@ -13,7 +13,7 @@ token = "CAAKOUxjp05kBAGv2nl1XKZBWBp7bfyStp2FhRTzJTV3xJZBObadaYBSDyEEGDTezs81Xof
 api = "https://graph.facebook.com/v2.5/"
 para = {'access_token' : token}
 
-f = open("bamboolist",'r')
+f = open("bamboolist_test",'r')
 
 pages = {}
 for line in f:
