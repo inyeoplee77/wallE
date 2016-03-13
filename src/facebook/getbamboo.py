@@ -46,8 +46,8 @@ for page in pages:
 		r = requests.get(r['paging']['previous']).json()
 	while True:
 		if 'data' not in r:
-            break
-        for p in r['data']:
+			break
+		for p in r['data']:
 			#f = open(dir+ '/' + p['id'],'w')
 			if 'message' not in p:
 				continue
@@ -56,47 +56,47 @@ for page in pages:
 			#f.write(message.strip())
 			count += 1
 			try:
-                like = requests.get(api + p['id'] + '/likes?summary=true',params = para).json()
-                if 'error' in like:
-				    likes_errors[p['id']] = like['error']['message']
-				    continue
-			    else:
-				    likes[p['id']] = like['summary']['total_count']
-            except ValueError as v:
-                print 'returned value is not json:' + v.strerror
-                print api + p['id'] + '/likes?summary=true'
-                continue
+				like = requests.get(api + p['id'] + '/likes?summary=true',params = para).json()
+				if 'error' in like:
+					likes_errors[p['id']] = like['error']['message']
+					continue
+				else:
+					likes[p['id']] = like['summary']['total_count']
+			except ValueError as v:
+				print 'returned value is not json:' + v.strerror
+				print api + p['id'] + '/likes?summary=true'
+				continue
 			except requests.exceptions.ConnectionError as e:
-                print 'ConnectionFail:' + e.strerror
-                print api + p['id'] + '/likes?summary=true'
-                continue
+				print 'ConnectionFail:' + e.strerror
+				print api + p['id'] + '/likes?summary=true'
+				continue
 		if 'paging' not in r:
 			break
-        try:
-		    r = requests.get(r['paging']['next']).json()
-        except ValueError as v:
-            print 'returned value is not json:' + v.strerror
-            print r['paging']['next']
-            continue
-        except requests.exceptions.ConnectionError as e:
-            print 'ConnectionFail:' + e.strerror
-            print r['paging']['next']
-            continue
-        print '%d posts scrapped' % count
-        
-        
-            
+		try:
+			r = requests.get(r['paging']['next']).json()
+		except ValueError as v:
+			print 'returned value is not json:' + v.strerror
+			print r['paging']['next']
+			continue
+		except requests.exceptions.ConnectionError as e:
+			print 'ConnectionFail:' + e.strerror
+			print r['paging']['next']
+			continue
+		print '%d posts scrapped' % count
+		
+		
+			
 			
 for e in page_errors:
 	print 'Error occurred while processing ' + e + ' page :' + page_errors[e]
 for e in likes_errors:
 	print 'Error occurred while obtaining likes on :' + e + ' post : ' + likes_errors[e] 
-like_file = open(dir + '/likes','w')
+like_file = open('likes','w')
 try:
-    for like in likes:
-        like_file.write(like+' ' + str(likes[like]) + '\n')
+	for like in likes:
+		like_file.write(like+' ' + str(likes[like]) + '\n')
 except Exception as e:
-    print "Error occurred while writing like file :",
-    print e.strerror	
+	print "Error occurred while writing like file :",
+	print e.strerror
 
 
