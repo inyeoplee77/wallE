@@ -48,12 +48,12 @@ for page in pages:
 		if 'data' not in r:
             break
         for p in r['data']:
-			f = open(dir+ '/' + p['id'],'w')
+			#f = open(dir+ '/' + p['id'],'w')
 			if 'message' not in p:
 				continue
-			message = nomean.sub('',p['message']).encode('utf8').strip()
-			message = ' '.join(nonkorean.sub('',hashtag.sub('',message)).split())
-			f.write(message.strip())
+			#message = nomean.sub('',p['message']).encode('utf8').strip()
+			#message = ' '.join(nonkorean.sub('',hashtag.sub('',message)).split())
+			#f.write(message.strip())
 			count += 1
 			try:
                 like = requests.get(api + p['id'] + '/likes?summary=true',params = para).json()
@@ -82,15 +82,21 @@ for page in pages:
             print 'ConnectionFail:' + e.strerror
             print r['paging']['next']
             continue
-		print '%d posts scrapped' % count
+        print '%d posts scrapped' % count
+        
+        
+            
 			
 for e in page_errors:
 	print 'Error occurred while processing ' + e + ' page :' + page_errors[e]
 for e in likes_errors:
 	print 'Error occurred while obtaining likes on :' + e + ' post : ' + likes_errors[e] 
-f = open('likes','w')
-for like in likes:
-	f.write(like+' ' + likes[like] + '\n')
-	
+like_file = open(dir + '/likes','w')
+try:
+    for like in likes:
+        like_file.write(like+' ' + str(likes[like]) + '\n')
+except Exception as e:
+    print "Error occurred while writing like file :",
+    print e.strerror	
 
 
