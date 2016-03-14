@@ -60,7 +60,7 @@ for page in pages:
 				continue
 			#message = nomean.sub('',p['message']).encode('utf8').strip()
 			#message = ' '.join(nonkorean.sub('',hashtag.sub('',message)).split())
-			#f.write(message.strip())
+			#f.write(message.strip().encode('utf8'))
 			count += 1
 			try:
 				like = requests.get(api + p['id'] + '/likes?summary=true',params = para).json()
@@ -103,10 +103,10 @@ for e in likes_errors:
 like_file = open('likes','w')
 try:
 	for like in likes:	
-		like_file.write(like+' ' + str(likes[like]) + '\n')
+		like_file.write(like + ' ' + str(likes[like]) + '\n')
 	for like in likes_errors:
 		count = requests.get(api + likes_errors[like] + '/likes?summary=true',params = para).json()['summary']['total_count']
-		like_file.write(like+' ' + str(count) + '\n')
+		like_file.write(like + ' ' + str(count) + '\n')
 except Exception as e:
 	print "Error occurred while writing like file :",
 	print e.strerror
