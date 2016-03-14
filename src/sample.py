@@ -1,19 +1,19 @@
 import os
 import random
-from shutil import copyfile
+import shutil
 base = "facebook/"
 train_target = "clustering/train/"
 test_target = "clustering/test/"
-
-shutil.rmtree('clustering/train')
-shutil.rmtree('clustering/test')
-
+if os.path.exists(train_target):
+	shutil.rmtree(train_target)
+if os.path.exists(test_target):
+	shutil.rmtree(test_target)
 os.mkdir(train_target)
 os.mkdir(test_target)
 for dir in os.listdir(base):
 	if os.path.isdir(base + dir):
 		files = random.sample(os.listdir(base + dir),2000)
-		for f in files[:999]:
+		for f in files[:1000]:
 			copyfile(base + dir + "/" + f,train_target + f)
 		for f in files[1000:]:
-			copyfile(base + dir + "/" + f,test_target + f)				
+			copyfile(base + dir + "/" + f,test_target + f)
