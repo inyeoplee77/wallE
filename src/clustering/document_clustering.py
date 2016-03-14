@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 =======================================
 Clustering text documents using k-means
@@ -127,8 +128,7 @@ categories = None
 #                            shuffle=True, random_state=42)
 
 ################
-cache = dict(train=load_files('train/', encoding='utf8'),
-                 test=load_files('test/', encoding='utf8'))
+cache = dict(train=load_files('train/'),test=load_files('test/'))
 data_lst = list()
 target = list()
 filenames = list()
