@@ -147,7 +147,7 @@ print("%d documents" % len(dataset.data))
 print("%d categories" % len(dataset.target))
 print()
 #labels = dataset.target
-true_k = 10
+true_k = 2
 print 
 #true_k = np.unique(labels).shape[0]
 
@@ -165,8 +165,8 @@ if opts.use_hashing:
 									   non_negative=False, norm='l2',
 									   binary=False)
 else:
-	vectorizer = TfidfVectorizer(max_df=0.5, max_features=opts.n_features,
-								 min_df=2,
+	vectorizer = TfidfVectorizer(max_df=0.1, max_features=opts.n_features,
+								 min_df=1,
 								 use_idf=opts.use_idf,
 								 decode_error = 'ignore')
 X = vectorizer.fit_transform(dataset.data)
@@ -222,7 +222,6 @@ print("Silhouette Coefficient: %0.3f"
 '''
 print()
 
-
 if not opts.use_hashing:
 	print("Top terms per cluster:")
 
@@ -236,7 +235,7 @@ if not opts.use_hashing:
 	for i in range(true_k):
 		print("Cluster %d:" % i, end='')
 		for ind in order_centroids[i, :10]:
-			print(' %s' % terms[ind], end='')
+			print(' %s' % terms[ind], end='\n')
 		print()
 
 
