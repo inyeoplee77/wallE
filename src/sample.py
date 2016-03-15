@@ -14,6 +14,6 @@ for dir in os.listdir(base):
 	if os.path.isdir(base + dir):
 		files = random.sample(os.listdir(base + dir),2000)
 		for f in files[:1000]:
-			copyfile(base + dir + "/" + f,train_target + f)
+			shutil.copyfile(base + dir + "/" + f,train_target + f)
 		for f in files[1000:]:
-			copyfile(base + dir + "/" + f,test_target + f)
+			shutil.copyfile(base + dir + "/" + f,test_target + f)
