@@ -1,2 +1,5 @@
 .DS_Store
 .*.sw?
+src/facebook/data/
+src/clustering/test/
+src/clustering/train/
