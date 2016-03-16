@@ -126,7 +126,7 @@ categories = None
 #                            shuffle=True, random_state=42)
 
 ################
-cache = dict(train=load_files('train'),test=load_files('test/'))
+cache = dict(train=load_files('train',encoding = 'utf8'),test=load_files('test/',encoding='utf8'))
 data_lst = list()
 target = list()
 filenames = list()
@@ -165,7 +165,7 @@ if opts.use_hashing:
 else:
 	vectorizer = TfidfVectorizer(max_df=0.1, #max_features=opts.n_features,
 								 min_df=1,
-								 use_idf=opts.use_idf,)
+								 use_idf=opts.use_idf,encoding='utf8')
 X = vectorizer.fit_transform(dataset.data)
 
 print("done in %fs" % (time() - t0))
