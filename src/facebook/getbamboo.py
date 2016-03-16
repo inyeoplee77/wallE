@@ -4,6 +4,7 @@ import os
 import re
 import locale
 import time
+import shutil
 appID = '719437504828313'
 appSecret = 'dae1d765e81c02e566d6ccaa2b6af441'
 
@@ -32,11 +33,13 @@ count = 0
 nonkorean = re.compile(u'[^ 가-힣]+',re.UNICODE)
 hashtag = re.compile(u'#[가-힣\w0-9\S]+',re.UNICODE)
 nomean = re.compile(u'[ㄱ-ㅎ]',re.UNICODE)
-print pages
+#print pages
 time_count = 0
+if not os.path.exists('data'):
+	os.makedirs('data')
 for page in pages:
 	dir = pages[page].split('/')[-1]
-	print dir
+	dir = 'data/' + dir
 	count = 0
 	if not os.path.exists(dir):
 		os.makedirs(dir)
@@ -99,9 +102,16 @@ for page in pages:
 			print r['paging']['next']
 			continue
 		print '%d posts scrapped' % count
-		if count >= 1000:
-			break
-		
+		#if count >= 100:
+		#	break
+	f.flush()
+
+print 'compressing data'
+shutil.make_archive('data', 'gztar', 'data')
+print 'compression completed'		
+print 'deleting data directory'
+shutil.rmtree('data')
+print 'deletion completed'
 for e in page_errors:
 	print 'Error occurred while processing ' + e + ' page :' + page_errors[e]
 for e in likes_errors:
