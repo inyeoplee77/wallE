@@ -29,9 +29,9 @@ count = 0
 
 #locale.setlocale(locale.LC_ALL,'')
 #[^ ㄱ-ㅎ|ㅏ-ㅣㅣ가-힣]+
-nonkorean = re.compile('[^ 가-힣]+')
-hashtag = re.compile('#[가-힣\w0-9\S]+')
-nomean = re.compile('[ㄱ-ㅎ]')
+nonkorean = re.compile(u'[^ 가-힣]+',re.UNICODE)
+hashtag = re.compile(u'#[가-힣\w0-9\S]+',re.UNICODE)
+nomean = re.compile(u'[ㄱ-ㅎ]',re.UNICODE)
 print pages
 time_count = 0
 for page in pages:
@@ -58,6 +58,10 @@ for page in pages:
 			#f = open(dir+ '/' + p['id'],'w')
 			if 'message' not in p:
 				continue
+			message = nomean.sub(u' '.p['message'].strip().decode('utf8'))
+			message = u' '.join([voc for voc in nonkorean.sub(u'',hashtag.sub('',message)).split() if len(voc) < 10]
+			f.write(message.encode('utf8')) #save as byte form
+			
 			#message = nomean.sub('',p['message']).encode('utf8').strip()
 			#message = ' '.join(nonkorean.sub('',hashtag.sub('',message)).split())
 			#f.write(message.strip().encode('utf8'))
