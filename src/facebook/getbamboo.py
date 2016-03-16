@@ -55,11 +55,11 @@ for page in pages:
 		if 'data' not in r:
 			break
 		for p in r['data']:
-			#f = open(dir+ '/' + p['id'],'w')
+			f = open(dir+ '/' + p['id'],'w')
 			if 'message' not in p:
 				continue
-			message = nomean.sub(u' '.p['message'].strip().decode('utf8'))
-			message = u' '.join([voc for voc in nonkorean.sub(u'',hashtag.sub('',message)).split() if len(voc) < 10]
+			message = nomean.sub(u' ',p['message'].strip())
+			message = u' '.join([voc for voc in nonkorean.sub(u'',hashtag.sub('',message)).split() if len(voc) < 10])
 			f.write(message.encode('utf8')) #save as byte form
 			
 			#message = nomean.sub('',p['message']).encode('utf8').strip()
@@ -99,6 +99,8 @@ for page in pages:
 			print r['paging']['next']
 			continue
 		print '%d posts scrapped' % count
+		if count >= 1000:
+			break
 		
 for e in page_errors:
 	print 'Error occurred while processing ' + e + ' page :' + page_errors[e]
