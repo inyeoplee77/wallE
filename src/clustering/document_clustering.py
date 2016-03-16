@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 =======================================
 Clustering text documents using k-means
 =======================================
@@ -47,8 +47,7 @@ of dimensionality.
 Note: as k-means is optimizing a non-convex objective function, it will likely
 end up in a local optimum. Several runs with independent random init might be
 necessary to get a good convergence.
-
-"""
+'''
 
 # Author: Peter Prettenhofer <peter.prettenhofer@gmail.com>
 #         Lars Buitinck <L.J.Buitinck@uva.nl>
@@ -77,8 +76,7 @@ import numpy as np
 
 
 # Display progress logs on stdout
-logging.basicConfig(level=logging.INFO,
-					format='%(asctime)s %(levelname)s %(message)s')
+#logging.basicConfig(level=logging.INFO,format='%(asctime)s %(levelname)s %(message)s')
 
 # parse commandline arguments
 op = OptionParser()
@@ -101,7 +99,7 @@ op.add_option("--verbose",
 			  action="store_true", dest="verbose", default=False,
 			  help="Print progress reports inside k-means algorithm.")
 
-print(__doc__)
+#print(__doc__)
 op.print_help()
 
 (opts, args) = op.parse_args()
@@ -128,7 +126,7 @@ categories = None
 #                            shuffle=True, random_state=42)
 
 ################
-cache = dict(train=load_files('train/'),test=load_files('test/'))
+cache = dict(train=load_files('train'),test=load_files('test/'))
 data_lst = list()
 target = list()
 filenames = list()
@@ -165,16 +163,15 @@ if opts.use_hashing:
 									   non_negative=False, norm='l2',
 									   binary=False)
 else:
-	vectorizer = TfidfVectorizer(max_df=0.1, max_features=opts.n_features,
+	vectorizer = TfidfVectorizer(max_df=0.1, #max_features=opts.n_features,
 								 min_df=1,
-								 use_idf=opts.use_idf,
-								 decode_error = 'ignore')
+								 use_idf=opts.use_idf,)
 X = vectorizer.fit_transform(dataset.data)
 
 print("done in %fs" % (time() - t0))
 print("n_samples: %d, n_features: %d" % X.shape)
 print()
-
+print(X.shape)
 if opts.n_components:
 	print("Performing dimensionality reduction using LSA")
 	t0 = time()
@@ -203,7 +200,7 @@ if opts.minibatch:
 	km = MiniBatchKMeans(n_clusters=true_k, init='k-means++', n_init=1,
 						 init_size=1000, batch_size=1000, verbose=opts.verbose)
 else:
-	km = KMeans(n_clusters=true_k, init='k-means++', max_iter=100, n_init=1,
+	km = KMeans(n_clusters=true_k, init='k-means++', max_iter=100, n_init=10,
 				verbose=opts.verbose)
 
 print("Clustering sparse data with %s" % km)
@@ -243,8 +240,8 @@ if not opts.use_hashing:
 
 
 #LDA
-n_samples = 10000
-n_features = 10000
+n_samples = X.shape[0]
+n_features = X.shape[1]
 n_topics = 10
 n_top_words = 20
 
@@ -261,11 +258,12 @@ print("Loading dataset...")
 t0 = time()
 
 data_samples = dataset.data
+tfidf_vectorizer = vectorizer
 print("done in %0.3fs." % (time() - t0))
 
 # Use tf-idf features for NMF.
 print("Extracting tf-idf features for NMF...")
-tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=n_features,decode_error = 'ignore')
+#tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=n_features,decode_error = 'ignore')
 t0 = time()
 tfidf = tfidf_vectorizer.fit_transform(data_samples)
 print("done in %0.3fs." % (time() - t0))
