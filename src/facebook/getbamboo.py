@@ -109,9 +109,9 @@ for page in pages:
 print 'compressing data'
 shutil.make_archive('data', 'gztar', 'data')
 print 'compression completed'		
-print 'deleting data directory'
-shutil.rmtree('data')
-print 'deletion completed'
+#print 'deleting data directory'
+#shutil.rmtree('data')
+#print 'deletion completed'
 for e in page_errors:
 	print 'Error occurred while processing ' + e + ' page :' + page_errors[e]
 for e in likes_errors:
