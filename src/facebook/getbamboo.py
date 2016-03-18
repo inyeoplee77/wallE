@@ -82,11 +82,11 @@ for page in pages:
 					time_count = 0
 					likes[p['id']] = like['summary']['total_count']
 			except ValueError as v:
-				print 'returned value is not json:' + v.strerror
+				print 'returned value is not json'
 				print api + p['id'] + '/likes?summary=true'
 				continue
 			except requests.exceptions.ConnectionError as e:
-				print 'ConnectionFail:' + e.strerror
+				print 'ConnectionFail'
 				print api + p['id'] + '/likes?summary=true'
 				continue
 		if 'paging' not in r:
@@ -94,11 +94,11 @@ for page in pages:
 		try:
 			r = requests.get(r['paging']['next']).json()
 		except ValueError as v:
-			print 'returned value is not json:' + v.strerror
+			print 'returned value is not json'
 			print r['paging']['next']
 			continue
 		except requests.exceptions.ConnectionError as e:
-			print 'ConnectionFail:' + e.strerror
+			print 'ConnectionFail'
 			print r['paging']['next']
 			continue
 		print '%d posts scrapped' % count
@@ -124,7 +124,6 @@ try:
 		count = requests.get(api + likes_errors[like] + '/likes?summary=true',params = para).json()['summary']['total_count']
 		like_file.write(like + ' ' + str(count) + '\n')
 except Exception as e:
-	print "Error occurred while writing like file :",
-	print e.strerror
+	print "Error occurred while writing like file"
 
 
