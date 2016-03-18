@@ -48,7 +48,7 @@ for page in pages:
 		page_errors[page] = r['error']['message']
 		if r['error']['code'] == 17:
 			if time_count < 3:
-				time.wait(600)
+				time.sleep(600)
 				time_count += 1
 		continue
 	time_count = 0
@@ -75,7 +75,7 @@ for page in pages:
 					likes_errors[p['id']] = like['error']['message']
 					if like['error']['code'] == 17:
 						if time_count < 3:
-							time.wait(600)
+							time.sleep(600)
 							time_count += 1
 					continue
 				else:
