@@ -119,6 +119,8 @@ categories = [
 ]
 '''
 
+
+stop_words = [u'외대',u'한양대',u'고대', u'연대',u'중앙대',u'경북대',u'경희대',u'서울대',u'설대',u'성대',u'성균관대',u'서강대',u'서울시립대',u'댓글',u'시립대',u'서울시립대',u'오전',u'오후',u'외침',u'제보',u'숲'u'대숲',u'대나무숲',u'연대숲',u'서강대숲',u'이야기']
 # Uncomment the following to do the analysis on all the categories
 categories = None
 
@@ -165,7 +167,8 @@ if opts.use_hashing:
 else:
 	vectorizer = TfidfVectorizer(max_df=0.1, #max_features=opts.n_features,
 								 min_df=1,
-								 use_idf=opts.use_idf,encoding='utf8')
+								 use_idf=opts.use_idf,encoding='utf8',
+								 stop_words = stop_words)
 X = vectorizer.fit_transform(dataset.data)
 
 print("done in %fs" % (time() - t0))

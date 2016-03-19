@@ -32,7 +32,7 @@ count = 0
 #[^ ㄱ-ㅎ|ㅏ-ㅣㅣ가-힣]+
 nonkorean = re.compile(u'[^ 가-힣]+',re.UNICODE)
 hashtag = re.compile(u'#[가-힣\w0-9\S]+',re.UNICODE)
-nomean = re.compile(u'[ㄱ-ㅎ]',re.UNICODE)
+nomean = re.compile(u'[ㄱ-ㅎ]|[가-힣\S]*대숲|[가-힣\S]*대나무숲|[0-9\S]*번째|[가-힣\S]*학교',re.UNICODE)
 #print pages
 time_count = 0
 if not os.path.exists('data'):
