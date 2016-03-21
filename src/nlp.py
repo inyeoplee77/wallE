@@ -7,20 +7,20 @@ target = "data/"
 base = 'facebook/data/'
 twitter = Twitter()
 if not os.path.exists(base):
-	print 'no data'
-	exit(1)
+	if not os.path.exists(base[:-1] + '.tar.gz'):
+		print 'no data'
+		exit(1)
+	else:
+		print 'extracting data...'
+		tarfile.open(base[:-1] + '.tar.gz','r').extractall(base)
+		print 'extracting completed'
 
 if not os.path.exists(target):
 	os.mkdir(target)
-else:
-	print 'compressing data'
-	shutil.make_archive('data', 'gztar', 'data')
-	print 'compression completed'
-	y = input( 'press y to clear data:')
-	if y == 'y':
-		shutil.rmtree(target)
-	else:
-		exit(1)
+
+y = input( 'press y to clear data:')
+if y == 'y':
+	shutil.rmtree(target)
 	
 
 nomean = re.compile(u'[가-힣\S]*대숲|[가-힣\S]*대나무숲|[0-9\S]*번째|[가-힣\S]*학교',re.UNICODE)
@@ -38,10 +38,12 @@ for dir in os.listdir(base):
 			text = open(base+dir+'/'+file,'r').read().decode('utf8')
 			f = open(target + dir + '/' + file,'w')
 			text = nomean.sub(u' ',text)
-			
 			for i in twitter.pos(text,norm=True,stem=True):
 				if i[1] != "Josa" and i[0] not in stopwords and len(i[0]) > 1:
 					f.write(i[0].encode('utf8') + ' ')
 			f.flush()
 		print dir+ ' done'
 
+print 'compressing data'
+shutil.make_archive('data', 'gztar', 'data')
+print 'compression completed'
