@@ -2,19 +2,21 @@ import os
 import random
 import shutil
 import tarfile
-base = "facebook/data/"
+base = "data/"
 train_target = "clustering/train/"
 test_target = "clustering/test/"
-sample_size = 50
+sample_size = 1000
+
 if os.path.exists(train_target):
 	shutil.rmtree(train_target)
 if os.path.exists(test_target):
 	shutil.rmtree(test_target)
 os.mkdir(train_target)
 os.mkdir(test_target)
+
 if not os.path.exists(base):
 	tarfile.open(base[:-1] + '.tar.gz','r').extractall(base)
-
+	 
 for dir in os.listdir(base):	
 	if os.path.isdir(base + dir):
 		print "copying samples of " + dir + " data..." 
