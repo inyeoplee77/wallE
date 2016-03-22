@@ -1,8 +1,10 @@
 import os
+import shutil
 for file in os.listdir('result'):
+	if os.path.exists('text_result/'+file+'_text'):
+		shutil.rmtree('text_result/'+file+'_text')
+	os.mkdir('text_result/'+file+'_text')
 	for line in open('result/' + file,'r'):
-		print file
 		id = '/'.join(line.strip().split('/')[1:])
-		print open('../facebook/data/' + id).read()
-		print '------------------------------------'
-	print'===================================='
+		shutil.copyfile("../facebook/data/" + id ,'text_result/'+file+'_text/' + id.split('/')[-1])
+	print 'done ' + file
