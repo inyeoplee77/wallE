@@ -70,8 +70,9 @@ from sklearn.decomposition import NMF, LatentDirichletAllocation
 import logging
 from optparse import OptionParser
 import sys
+import os
 from time import time
-
+from scipy.sparse import csr_matrix
 import numpy as np
 
 
@@ -120,7 +121,7 @@ categories = [
 '''
 
 
-stop_words = [u'외대',u'한양대',u'고대', u'연대',u'중앙대',u'경북대',u'경희대',u'서울대',u'설대',u'성대',u'성균관대',u'서강대',u'서울시립대',u'댓글',u'시립대',u'서울시립대',u'오전',u'오후',u'외침',u'제보',u'숲'u'대숲',u'대나무숲',u'연대숲',u'서강대숲',u'이야기']
+#stop_words = [u'외대',u'한양대',u'고대', u'연대',u'중앙대',u'경북대',u'경희대',u'서울대',u'설대',u'성대',u'성균관대',u'서강대',u'서울시립대',u'댓글',u'시립대',u'서울시립대',u'오전',u'오후',u'외침',u'제보',u'숲',u'대숲',u'대나무숲',u'연대숲',u'서강대숲',u'이야기']
 # Uncomment the following to do the analysis on all the categories
 categories = None
 
@@ -128,6 +129,7 @@ categories = None
 #                            shuffle=True, random_state=42)
 
 ################
+#original = load_files('../facebook/data')
 cache = dict(train=load_files('train',encoding = 'utf8'),test=load_files('test/',encoding='utf8'))
 data_lst = list()
 target = list()
@@ -167,8 +169,7 @@ if opts.use_hashing:
 else:
 	vectorizer = TfidfVectorizer(max_df=0.1, #max_features=opts.n_features,
 								 min_df=1,
-								 use_idf=opts.use_idf,encoding='utf8',
-								 stop_words = stop_words)
+								 use_idf=opts.use_idf,encoding='utf8')
 X = vectorizer.fit_transform(dataset.data)
 
 print("done in %fs" % (time() - t0))
@@ -199,12 +200,11 @@ if opts.n_components:
 ###############################################################################
 # Do the actual clustering
 
-if opts.minibatch:
-	km = MiniBatchKMeans(n_clusters=true_k, init='k-means++', n_init=1,
-						 init_size=1000, batch_size=1000, verbose=opts.verbose)
-else:
-	km = KMeans(n_clusters=true_k, init='k-means++', max_iter=100, n_init=10,
-				verbose=opts.verbose)
+#if opts.minibatch:
+#	km = MiniBatchKMeans(n_clusters=true_k, init='k-means++', n_init=1,init_size=1000, batch_size=1000, verbose=opts.verbose)
+
+#else:
+km = KMeans(n_clusters=true_k, init='k-means++', max_iter=100, n_init=10,verbose=opts.verbose)
 
 print("Clustering sparse data with %s" % km)
 t0 = time()
@@ -263,22 +263,21 @@ t0 = time()
 data_samples = dataset.data
 tfidf_vectorizer = vectorizer
 print("done in %0.3fs." % (time() - t0))
-
+'''
 # Use tf-idf features for NMF.
 print("Extracting tf-idf features for NMF...")
 #tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=n_features,decode_error = 'ignore')
 t0 = time()
 tfidf = tfidf_vectorizer.fit_transform(data_samples)
 print("done in %0.3fs." % (time() - t0))
-
+'''
 # Use tf (raw term count) features for LDA.
 print("Extracting tf features for LDA...")
-tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=n_features,
-								decode_error = 'ignore')
+tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=n_features)
 t0 = time()
 tf = tf_vectorizer.fit_transform(data_samples)
 print("done in %0.3fs." % (time() - t0))
-
+'''
 # Fit the NMF model
 print("Fitting the NMF model with tf-idf features,"
 	  "n_samples=%d and n_features=%d..."
@@ -291,16 +290,39 @@ print("done in %0.3fs." % (time() - t0))
 print("\nTopics in NMF model:")
 tfidf_feature_names = tfidf_vectorizer.get_feature_names()
 print_top_words(nmf, tfidf_feature_names, n_top_words)
-
+'''
 print("Fitting LDA models with tf features, n_samples=%d and n_features=%d..."
 	  % (n_samples, n_features))
-lda = LatentDirichletAllocation(n_topics=n_topics, max_iter=5,
-								learning_method='online', learning_offset=50.,
-								random_state=0)
+
+lda = LatentDirichletAllocation(n_topics=n_topics, max_iter=10,learning_method='batch')
 t0 = time()
-lda.fit(tf)
+result = lda.fit_transform(tf)
 print("done in %0.3fs." % (time() - t0))
+
 
 print("\nTopics in LDA model:")
 tf_feature_names = tf_vectorizer.get_feature_names()
 print_top_words(lda, tf_feature_names, n_top_words)
+
+
+
+
+
+
+
+km = KMeans(n_clusters=10, init='k-means++', max_iter=100, n_init=10,verbose=opts.verbose)
+
+result = csr_matrix(result)
+km.fit(result)
+
+if not os.path.exists('result'):
+	os.mkdir('result')
+#order_centroids = km.cluster_centers_.argsort()[:, ::-1]
+for i in range(10):
+	print("Cluster %d:" % i, end='')
+	d = km.transform(result)[:, i]
+	ind = np.argsort(d)[::-1][:50]
+	f = open('result/cluster' + str(i),'w')	
+	for index in ind:
+		print(' %s' % index, end='\n')
+		f.write(dataset.filenames[index] + '\n')
