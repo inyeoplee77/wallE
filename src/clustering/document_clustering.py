@@ -311,7 +311,7 @@ print_top_words(lda, tf_feature_names, n_top_words)
 
 
 
-km = KMeans(n_clusters=10, init='k-means++', max_iter=100, n_init=10,verbose=opts.verbose)
+km = KMeans(n_clusters=2, init='k-means++', max_iter=100, n_init=10,verbose=opts.verbose)
 
 result = csr_matrix(result)
 km.fit(result)
@@ -322,7 +322,7 @@ else:
 	shutil.rmtree('result')
 	os.mkdir('result')
 #order_centroids = km.cluster_centers_.argsort()[:, ::-1]
-for i in range(10):
+for i in range(2):
 	print("Cluster %d:" % i, end='')
 	d = km.transform(result)[:, i]
 	ind = np.argsort(d)[::-1][:10]
