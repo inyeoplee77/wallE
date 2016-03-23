@@ -320,6 +320,7 @@ if not os.path.exists('result'):
 	os.mkdir('result')
 else:
 	shutil.rmtree('result')
+	os.mkdir('result')
 #order_centroids = km.cluster_centers_.argsort()[:, ::-1]
 for i in range(10):
 	print("Cluster %d:" % i, end='')
