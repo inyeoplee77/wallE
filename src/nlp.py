@@ -18,10 +18,10 @@ if not os.path.exists(base):
 if not os.path.exists(target):
 	os.mkdir(target)
 
-y = input( 'press y to clear data:')
+y = raw_input( 'press y to clear data:')
 if y == 'y':
 	shutil.rmtree(target)
-	
+	os.mkdir(target)	
 
 nomean = re.compile(u'[가-힣\S]*대숲|[가-힣\S]*대나무숲|[0-9\S]*번째|[가-힣\S]*학교',re.UNICODE)
 stopwords = [u'외대',u'한양대',u'고대', u'연대',u'중앙대',u'경북대',u'경희대',u'서울대',u'설대',u'성대',u'성균관대',u'서강대',u'서울시립대',u'댓글',u'시립대',u'서울시립대',u'오전',u'오후',u'외침',u'제보',u'숲',u'대숲',u'대나무숲',u'연대숲',u'서강대숲',u'이야기',u'대나무']
