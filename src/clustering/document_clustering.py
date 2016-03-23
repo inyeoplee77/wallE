@@ -317,11 +317,13 @@ km.fit(result)
 
 if not os.path.exists('result'):
 	os.mkdir('result')
+else:
+	shutil.rmtree('result')
 #order_centroids = km.cluster_centers_.argsort()[:, ::-1]
 for i in range(10):
 	print("Cluster %d:" % i, end='')
 	d = km.transform(result)[:, i]
-	ind = np.argsort(d)[::-1][:50]
+	ind = np.argsort(d)[::-1][:10]
 	f = open('result/cluster' + str(i),'w')	
 	for index in ind:
 		print(' %s' % index, end='\n')
