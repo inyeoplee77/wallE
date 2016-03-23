@@ -71,6 +71,7 @@ import logging
 from optparse import OptionParser
 import sys
 import os
+import shutil
 from time import time
 from scipy.sparse import csr_matrix
 import numpy as np
