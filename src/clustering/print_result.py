@@ -4,6 +4,7 @@ if not os.path.exists('text_result'):
 	os.mkdir('text_result')
 else:
 	shutil.rmtree('text_result')
+	os.mkdir('text_result')
 for file in os.listdir('result'):
 	if os.path.exists('text_result/'+file+'_text'):
 		shutil.rmtree('text_result/'+file+'_text')
