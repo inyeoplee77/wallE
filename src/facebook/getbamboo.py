@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
 import os
-import re
 import locale
 import time
 import shutil
@@ -15,7 +14,7 @@ token = "CAAKOUxjp05kBAGv2nl1XKZBWBp7bfyStp2FhRTzJTV3xJZBObadaYBSDyEEGDTezs81Xof
 api = "https://graph.facebook.com/v2.5/"
 para = {'access_token' : token}
 
-f = open("bamboolist_test",'r')
+f = open("../../data/facebook/bamboolist",'r')
 
 pages = {}
 for line in f:
@@ -30,16 +29,21 @@ count = 0
 
 #locale.setlocale(locale.LC_ALL,'')
 #[^ ㄱ-ㅎ|ㅏ-ㅣㅣ가-힣]+
-nonkorean = re.compile(u'[^ 가-힣]+',re.UNICODE)
-hashtag = re.compile(u'#[가-힣\w0-9\S]+',re.UNICODE)
-nomean = re.compile(u'[ㄱ-ㅎ]|[가-힣\S]*대숲|[가-힣\S]*대나무숲|[0-9\S]*번째|[가-힣\S]*학교',re.UNICODE)
+#nonkorean = re.compile(u'[^ 가-힣]+',re.UNICODE)
+#hashtag = re.compile(u'#[가-힣\w0-9\S]+',re.UNICODE)
+#nomean = re.compile(u'[ㄱ-ㅎ]|[가-힣\S]*대숲|[가-힣\S]*대나무숲|[0-9\S]*번째|[가-힣\S]*학교',re.UNICODE)
 #print pages
 time_count = 0
-if not os.path.exists('data'):
-	os.makedirs('data')
+if not os.path.exists('../../data/facebook/data'):
+	os.makedirs('../../data/facebook/data')
+else:
+    y = raw_input('Would you like to clear data? (y/n)')
+    if y =='y':
+        shutil.rmtree('../../data/facebook/data')
+        os.makedirs('../../data/facebook/data')
 for page in pages:
 	dir = pages[page].split('/')[-1]
-	dir = 'data/' + dir
+	dir = '../../data/facebook/data/' + dir
 	count = 0
 	if not os.path.exists(dir):
 		os.makedirs(dir)
@@ -61,13 +65,10 @@ for page in pages:
 			f = open(dir+ '/' + p['id'],'w')
 			if 'message' not in p:
 				continue
-			message = nomean.sub(u' ',p['message'].strip())
-			message = u' '.join([voc for voc in nonkorean.sub(u'',hashtag.sub('',message)).split() if len(voc) < 10])
-			f.write(message.encode('utf8')) #save as byte form
+			#message = nomean.sub(u' ',p['message'].strip())
+			#message = u' '.join([voc for voc in nonkorean.sub(u'',hashtag.sub('',message)).split() if len(voc) < 10])
 			
-			#message = nomean.sub('',p['message']).encode('utf8').strip()
-			#message = ' '.join(nonkorean.sub('',hashtag.sub('',message)).split())
-			#f.write(message.strip().encode('utf8'))
+            f.write(p['message'].encode('utf8')) #save as byte form
 			count += 1
 			try:
 				like = requests.get(api + p['id'] + '/likes?summary=true',params = para).json()
@@ -105,10 +106,9 @@ for page in pages:
 		#if count >= 100:
 		#	break
 	f.flush()
-
 print 'compressing data'
-shutil.make_archive('data', 'gztar', 'data')
-print 'compression completed'		
+shutil.make_archive('../../facebook/data', 'gztar', '../../facebook/data')
+print 'compression completed'
 #print 'deleting data directory'
 #shutil.rmtree('data')
 #print 'deletion completed'
@@ -116,7 +116,7 @@ for e in page_errors:
 	print 'Error occurred while processing ' + e + ' page :' + page_errors[e]
 for e in likes_errors:
 	print 'Error occurred while obtaining likes on :' + e + ' post : ' + likes_errors[e] 
-like_file = open('likes','w')
+like_file = open('../../data/facebook/likes','w')
 try:
 	for like in likes:	
 		like_file.write(like + ' ' + str(likes[like]) + '\n')

@@ -94,9 +94,11 @@ op.add_option("--no-idf",
 op.add_option("--use-hashing",
 			  action="store_true", default=False,
 			  help="Use a hashing feature vectorizer")
+'''
 op.add_option("--n-features", type=int, default=10000,
 			  help="Maximum number of features (dimensions)"
 				   " to extract from text.")
+'''
 op.add_option("--verbose",
 			  action="store_true", dest="verbose", default=False,
 			  help="Print progress reports inside k-means algorithm.")
@@ -109,7 +111,7 @@ if len(args) > 0:
 	op.error("this script takes no arguments.")
 	sys.exit(1)
 
-
+#raw_input()
 ###############################################################################
 # Load some categories from the training set
 '''
@@ -131,7 +133,7 @@ categories = None
 
 ################
 #original = load_files('../facebook/data')
-cache = dict(train=load_files('train',encoding = 'utf8'),test=load_files('test/',encoding='utf8'))
+cache = dict(train=load_files('../../data/training/train',encoding = 'utf8'),test=load_files('../../data/training/test/',encoding='utf8'))
 data_lst = list()
 target = list()
 filenames = list()
@@ -145,7 +147,6 @@ data.target = np.array(target)
 data.filenames = np.array(filenames)
 dataset = data
 ################
-
 print("%d documents" % len(dataset.data))
 print("%d categories" % len(dataset.target))
 print()
@@ -275,7 +276,8 @@ print("done in %0.3fs." % (time() - t0))
 # Use tf (raw term count) features for LDA.
 print("Extracting tf features for LDA...")
 #tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=n_features)
-tf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=n_features)
+tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=n_features,binary = True)
+#tf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=n_features)
 t0 = time()
 tf = tf_vectorizer.fit_transform(data_samples)
 print("done in %0.3fs." % (time() - t0))
@@ -309,7 +311,7 @@ print_top_words(lda, tf_feature_names, n_top_words)
 
 
 #number of clusters
-clusters = 5
+clusters = 2
 
 
 km = KMeans(n_clusters=clusters, init='k-means++', max_iter=100, n_init=10,verbose=opts.verbose)
@@ -317,17 +319,18 @@ km = KMeans(n_clusters=clusters, init='k-means++', max_iter=100, n_init=10,verbo
 result = csr_matrix(result)
 km.fit(result)
 
-if not os.path.exists('result'):
-	os.mkdir('result')
+dest = '../../data/result/raw_result'
+if not os.path.exists(dest):
+	os.mkdir(dest)
 else:
-	shutil.rmtree('result')
-	os.mkdir('result')
+	shutil.rmtree(dest)
+	os.mkdir(dest)
 #order_centroids = km.cluster_centers_.argsort()[:, ::-1]
 for i in range(clusters):
 	print("Cluster %d:" % i, end='')
 	d = km.transform(result)[:, i]
 	ind = np.argsort(d)[::-1][:10]
-	f = open('result/cluster' + str(i),'w')	
+	f = open(dest +'/cluster' + str(i),'w')	
 	for index in ind:
 		print(' %s' % index, end='\n')
 		f.write(dataset.filenames[index] + '\n')
