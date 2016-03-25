@@ -1,5 +1,8 @@
 .DS_Store
 .*.sw?
-src/facebook/data/
-src/clustering/test/
-src/clustering/train/
+data/facebook/data/
+data/training/test/
+data/training/train/
+data/nlp/data/
+
+
