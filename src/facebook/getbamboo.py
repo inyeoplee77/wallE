@@ -23,107 +23,148 @@ for line in f:
 	pages[line[2]] = line[1]
 posts = {}
 page_errors = {}
-likes_errors = {}
-likes = {}
+likes_count = {}
+comments_count = {}
+who_likes_post = {}
+who_comment_post = {}
+share_count = {}
 count = 0
 
-#locale.setlocale(locale.LC_ALL,'')
-#[^ ㄱ-ㅎ|ㅏ-ㅣㅣ가-힣]+
-#nonkorean = re.compile(u'[^ 가-힣]+',re.UNICODE)
-#hashtag = re.compile(u'#[가-힣\w0-9\S]+',re.UNICODE)
-#nomean = re.compile(u'[ㄱ-ㅎ]|[가-힣\S]*대숲|[가-힣\S]*대나무숲|[0-9\S]*번째|[가-힣\S]*학교',re.UNICODE)
-#print pages
-time_count = 0
-if not os.path.exists('../../data/facebook/data'):
-	os.makedirs('../../data/facebook/data')
+				
+
+				
+def request(url):	
+	r = requests.get(url,params=para).json()
+	if 'error' in r:
+		if r['error']['code'] == 17:
+			while True:
+				print 'wait for 600 seconds...'
+				time.sleep(600)
+				r = requests.get(url,params=para).json()
+				if 'error' not in r:
+					break
+			return r
+		else:
+			return None
+	else:
+		return r				
+		
+from optparse import OptionParser
+
+op = OptionParser()
+op.add_option("--test",help="",dest="test",action='store_true',default=False)
+op.add_option("--n-samples",type=int,default=100,dest="test_size",help="size of sample. default = 100")
+op.print_help()
+(opts, args) = op.parse_args()
+if opts.test:
+	print 'test mode... sample size = ' + str(opts.test_size) + 'per pages'
+	dest = '../../data/facebook/test/data/'
 else:
-    y = raw_input('Would you like to clear data? (y/n)')
-    if y =='y':
-        shutil.rmtree('../../data/facebook/data')
-        os.makedirs('../../data/facebook/data')
+	dest = '../../data/facebook/data/'
+
+
+
+if not os.path.exists(dest):
+	os.makedirs(dest)
+else:
+	y = raw_input('Would you like to clear data? (y/n)')
+	if y =='y':
+		shutil.rmtree(dest)
+		os.makedirs(dest)
+
 for page in pages:
+	
 	dir = pages[page].split('/')[-1]
-	dir = '../../data/facebook/data/' + dir
+	dir = dest + dir
 	count = 0
 	if not os.path.exists(dir):
 		os.makedirs(dir)
-	r = requests.get(api + page + "/posts",params = para).json()
-	if 'error' in r:
-		page_errors[page] = r['error']['message']
-		if r['error']['code'] == 17:
-			if time_count < 3:
-				time.sleep(600)
-				time_count += 1
-		continue
-	time_count = 0
-	while 'previos' in r['paging']:
-		r = requests.get(r['paging']['previous']).json()
+	r = request(api + page + "/posts")
+	while r is not None and 'previos' in r['paging']:
+		r = request(r['paging']['previous'])	
 	while True:
-		if 'data' not in r:
-			break
-		for p in r['data']:
-			f = open(dir+ '/' + p['id'],'w')
-			if 'message' not in p:
-				continue
-			#message = nomean.sub(u' ',p['message'].strip())
-			#message = u' '.join([voc for voc in nonkorean.sub(u'',hashtag.sub('',message)).split() if len(voc) < 10])
-			
-            f.write(p['message'].encode('utf8')) #save as byte form
-			count += 1
-			try:
-				like = requests.get(api + p['id'] + '/likes?summary=true',params = para).json()
-				if 'error' in like:
-					likes_errors[p['id']] = like['error']['message']
-					if like['error']['code'] == 17:
-						if time_count < 3:
-							time.sleep(600)
-							time_count += 1
-					continue
-				else:
-					time_count = 0
-					likes[p['id']] = like['summary']['total_count']
-			except ValueError as v:
-				print 'returned value is not json'
-				print api + p['id'] + '/likes?summary=true'
-				continue
-			except requests.exceptions.ConnectionError as e:
-				print 'ConnectionFail'
-				print api + p['id'] + '/likes?summary=true'
-				continue
-		if 'paging' not in r:
-			break
 		try:
-			r = requests.get(r['paging']['next']).json()
-		except ValueError as v:
-			print 'returned value is not json'
-			print r['paging']['next']
+			if 'data' not in r:
+				break
+			for p in r['data']:
+				if 'message' not in p:
+					print 'message not in post'
+					continue
+				f = open(dir+ '/' + p['id'],'w')
+				f.write(p['message'].encode('utf8')) #save as byte form
+				count += 1	
+				share = request(api+p['id'] + '?fields=shares')
+				if 'shares' in share:
+					share_count[p['id']] = share['shares']['count']#int
+				else:
+					share_count[p['id']] = 0
+				likes = request(api + p['id'] + '/likes?summary=true')
+				likes_count[p['id']] = likes['summary']['total_count']
+				while True:
+					for like in likes['data']:
+						if like['id'] not in who_likes_post:
+							who_likes_post[like['id']] = []
+						if p['id'] not in who_likes_post[like['id']]:
+							who_likes_post[like['id']].append(p['id'])  
+					if 'paging' not in likes or 'next' not in likes['paging']:
+						break
+					likes = request(likes['paging']['next'])
+			
+				comments = request(api + p['id'] + '/comments?summary=true')
+				comments_count[p['id']] = comments['summary']['total_count']
+				while True:
+					for comment in comments['data']:
+						if comment['from']['id'] not in who_comment_post:
+							who_comment_post[comment['from']['id']] = []
+						if p['id'] not in who_comment_post[comment['from']['id']]: 
+							who_comment_post[comment['from']['id']].append(p['id'])
+					if 'paging' not in comments or 'next' not in comments['paging']:
+						break
+					comments = request(comments['paging']['next'])
+				f.close()
+				if opts.test and count >= opts.test_size:
+					break
+		except:
+			print 'some error occurred'
 			continue
-		except requests.exceptions.ConnectionError as e:
-			print 'ConnectionFail'
-			print r['paging']['next']
-			continue
-		print '%d posts scrapped' % count
-		#if count >= 100:
-		#	break
-	f.flush()
+		print '%d posts scrapped' % count	
+		if opts.test and count >= opts.test_size:
+			break
+		if 'paging' not in r or 'next' not in r['paging']:
+			break	
+		prev = r
+		while True:
+			try:
+				r = request(prev['paging']['next'])
+			except:
+				print 'some error occurred'
+				continue
+			else:
+				break
+		
 print 'compressing data'
-shutil.make_archive('../../facebook/data', 'gztar', '../../facebook/data')
+shutil.make_archive(dest, 'gztar', dest)
 print 'compression completed'
-#print 'deleting data directory'
-#shutil.rmtree('data')
-#print 'deletion completed'
-for e in page_errors:
-	print 'Error occurred while processing ' + e + ' page :' + page_errors[e]
-for e in likes_errors:
-	print 'Error occurred while obtaining likes on :' + e + ' post : ' + likes_errors[e] 
-like_file = open('../../data/facebook/likes','w')
-try:
-	for like in likes:	
-		like_file.write(like + ' ' + str(likes[like]) + '\n')
-	for like in likes_errors:
-		count = requests.get(api + likes_errors[like] + '/likes?summary=true',params = para).json()['summary']['total_count']
-		like_file.write(like + ' ' + str(count) + '\n')
-except Exception as e:
-	print "Error occurred while writing like file"
 
+like_count_file = open(dest+'like_count','w')
+like_file = open(dest+'who_likes_post','w')
+comment_file = open(dest+'who_comments_post','w')
+comment_count_file = open(dest+'comment_count','w')
+share_file = open(dest+'share_count','w')
 
+for share in share_count:
+	share_file.write(share + ',' + str(share_count[share]) + '\n')
+for like in who_likes_post:
+	like_file.write(like)
+	for id in who_likes_post[like]:
+		like_file.write(',' + id)
+	like_file.write('\n')
+for comment in who_comment_post:
+	comment_file.write(comment)
+	for id in who_comment_post[comment]:
+		comment_file.write(',' + id)
+	comment_file.write('\n')
+for like in likes_count:	
+	like_count_file.write(like + ',' + str(likes_count[like]) + '\n')
+for comment in comments_count:	
+	comment_count_file.write(comment + ',' + str(comments_count[comment]) + '\n')
