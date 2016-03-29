@@ -150,9 +150,9 @@ for page in pages:
 			else:
 				break
 		
-print 'compressing data'
-shutil.make_archive(dest, 'gztar', dest)
-print 'compression completed'
+#print 'compressing data'
+#shutil.make_archive(dest, 'gztar', dest)
+#print 'compression completed'
 
 like_count_file = open(dest+'like_count','a')
 like_file = open(dest+'who_likes_post','w')
