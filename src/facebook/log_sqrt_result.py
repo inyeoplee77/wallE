@@ -7,9 +7,9 @@ def sig(x):
 def absf(x):
 	return (x / (1+abs(x))) * 100 #0~100
 
-share_file = open('../../data/facebook/shares_sorted','r')
-comment_file = open('../../data/facebook/comment_count_sorted','r')
-like_file = open('../../data/facebook/like_count_sorted','r')
+share_file = open('../../data/facebook/data/share_count','r')
+comment_file = open('../../data/facebook/data/comment_count','r')
+like_file = open('../../data/facebook/data/like_count','r')
 
 result_dict = {}
 for line in share_file:
