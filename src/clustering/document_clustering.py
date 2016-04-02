@@ -318,7 +318,8 @@ km = KMeans(n_clusters=clusters, init='k-means++', max_iter=100, n_init=10,verbo
 
 result = csr_matrix(result)
 km.fit(result)
-
+if not os.path.exists('../../data/result'):
+	os.mkdir('../../data/result')
 dest = '../../data/result/raw_result'
 if not os.path.exists(dest):
 	os.mkdir(dest)
