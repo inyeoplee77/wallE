@@ -2,8 +2,9 @@ import math
 import pickle
 import os
 def hits(hub,auth,hub_score,auth_score,steps):
+	
 	for i in range(steps):
-		diff = 0
+		error = diff   
 		norm = 0
 		for a in auth:
 			v = auth_score[a]
@@ -28,7 +29,9 @@ def hits(hub,auth,hub_score,auth_score,steps):
 		for h in hub:
 			hub_score[h] = hub_score[h] / norm
 		print 'iteration ' + str(i) + ' done'
-		print 'error: %d' % diff
+		print 'error: %d' % abs(diff - error)
+		if abs(diff-error) < 0.1:
+			break
 	return hub,auth,hub_score,auth_score
 
 
@@ -61,14 +64,16 @@ def initialize(auth,hub):
 				auth[i].append(line.split(',')[0])
 	return auth,hub
 auth = {}
-hub = {}	
+hub = {}
 auth,hub = initialize(auth,hub)		
-hub_score = dict.fromkeys(hub,1)
 auth_score = dict.fromkeys(auth,1)
+hub_score = dict.fromkeys(hub,1)
 
 print 'load complete'
 print 'initiate hits algorithm' 
+	
 hub,auth,hub_score,auth_score = hits(hub,auth,hub_score,auth_score,10)
+		
 print 'hits algorithm done'
 
 print 'pickle objects'

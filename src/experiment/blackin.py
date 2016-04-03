@@ -19,9 +19,9 @@ def draw_distribution(data):
 
 
 
-share_file = open('../../data/facebook/share_count','r')
-comment_file = open('../../data/facebook/comment_count','r')
-like_file = open('../../data/facebook/like_count','r')
+share_file = open('../../data/facebook/data/share_count','r')
+comment_file = open('../../data/facebook/data/comment_count','r')
+like_file = open('../../data/facebook/data/like_count','r')
 
 result_dict = {}
 for line in share_file:
