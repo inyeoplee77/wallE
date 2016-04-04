@@ -37,10 +37,10 @@ def hits(hub,auth,hub_score,auth_score,steps):
 
 
 def initialize(auth,hub):
-	if os.path.exists('auth.pickle') and os.path.exists('hub.pickle'):
-		with open(r"auth.pickle", "rb") as input_file:
+	if os.path.exists('../../data/HITS/auth.pickle') and os.path.exists('hub.pickle'):
+		with open("../../data/HITS/auth.pickle", "rb") as input_file:
 			auth = pickle.load(input_file)
-		with open(r"hub.pickle", "rb") as input_file:
+		with open("../../data/HITS/hub.pickle", "rb") as input_file:
 			hub = pickle.load(input_file)
 	else:	
 		for line in open('../../data/facebook/data/who_likes_post','r'):
@@ -63,6 +63,7 @@ def initialize(auth,hub):
 					auth[i] = []
 				auth[i].append(line.split(',')[0])
 	return auth,hub
+
 auth = {}
 hub = {}
 auth,hub = initialize(auth,hub)		
@@ -71,18 +72,18 @@ hub_score = dict.fromkeys(hub,1)
 
 print 'load complete'
 print 'initiate hits algorithm' 
-	
+
 hub,auth,hub_score,auth_score = hits(hub,auth,hub_score,auth_score,10)
 		
 print 'hits algorithm done'
 
 print 'pickle objects'
-with open('hub.pickle', 'wb') as h:
+with open('../../data/HITS/hub.pickle', 'wb') as h:
 	pickle.dump(hub, h)
-with open('auth.pickle', 'wb') as h:
+with open('../../data/HITS/auth.pickle', 'wb') as h:
 	pickle.dump(auth, h)
-with open('hub_score.pickle', 'wb') as h:
+with open('../../data/HITS/hub_score.pickle', 'wb') as h:
 	pickle.dump(hub_score, h)
-with open('auth_score.pickle', 'wb') as h:
+with open('../../data/HITS/auth_score.pickle', 'wb') as h:
 	pickle.dump(auth_score, h)
 print 'pickling done'
