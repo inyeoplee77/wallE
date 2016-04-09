@@ -1,5 +1,7 @@
 import pickle
 import operator
+import shutil
+import os
 print 'load pickles'
 
 '''
@@ -9,18 +11,18 @@ with open("../../data/HITS/hub.pickle", "rb") as input_file:
 	hub = pickle.load(input_file)
 '''
 univ_name = {
-	'190747347803005':'CAU',
-	'203051796562493':'HUFS',
-	'580434565381308':'HYU',
-	'1539168192989299':'KARTS',
-	'497485933724583':'KNU',
-	'206910909512230':'KOREA',
-	'482012061908784':'KyungHee',
-	'626784727386153':'SKKU',
-	'560898400668463':'SNU',
-	'413238928809895':'SoGang',
-	'287555308059129':'UOS',
-	'180446095498086':'Yonsei'
+	'190747347803005':'caubamboo',
+	'203051796562493':'hufsbamboo',
+	'580434565381308':'hyubamboo',
+	'1539168192989299':'kartsbamboo',
+	'497485933724583':'KNUbamboo',
+	'206910909512230':'koreabamboo',
+	'482012061908784':'kyungheebamboo',
+	'626784727386153':'SKKUBamboo',
+	'560898400668463':'SNUBamboo',
+	'413238928809895':'sogangbamboo',
+	'287555308059129':'uosbamboo',
+	'180446095498086':'yonseibamboo'
 }
 
 
@@ -48,8 +50,8 @@ for a in auth_sorted:
 		result[univ].append(a[0])
 		univs[univ] -= 1
 for univ in result:
-	f = open('../../data/HITS/result/'+univ_name[univ],'w')
+	if not os.path.exists('../../data/HITS/result/'+univ_name[univ]): 
+		os.mkdir('../../data/HITS/result/'+univ_name[univ])
 	for r in result[univ]:
-		f.write(str(r) + '\n')
-	f.flush()
+		shutil.copyfile('../../data/facebook/data/'+ univ_name[univ] + '/' + r,'../../data/HITS/result/' + univ_name[univ] + '/' + r)
 		
