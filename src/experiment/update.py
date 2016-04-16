@@ -35,12 +35,24 @@ count = 0
 
 
 
-for line in open("../../data/facebook/who_comments_post",'r'):
+for line in open("../../data/facebook/data/who_comments_post",'r'):
+	line = line.strip()
 	who_comments_post[line.split(',')[0]] = line.split(',')[1:]
-for line in open("../../data/facebook/who_likes_post",'r'):
+for line in open("../../data/facebook/data/who_likes_post",'r'):
+	line = line.strip()
 	who_likes_post[line.split(',')[0]] = line.split(',')[1:]
 
-				
+for line in open("../../data/facebook/data/like_count",'r'):
+	line = line.strip()
+	likes_count[line.split(',')[0]] = int(line.split(',')[1])
+
+for line in open("../../data/facebook/data/share_count",'r'):
+	line = line.strip()
+	share_count[line.split(',')[0]] = int(line.split(',')[1])
+
+for line in open("../../data/facebook/data/comment_count",'r'):
+	line = line.strip()
+	comments_count[line.split(',')[0]] = int(line.split(',')[1])
 
 				
 def request(url):	
@@ -167,11 +179,11 @@ for page in pages:
 #shutil.make_archive(dest, 'gztar', dest)
 #print 'compression completed'
 
-like_count_file = open(dest+'like_count','a')
+like_count_file = open(dest+'like_count','w')
 like_file = open(dest+'who_likes_post','w')
 comment_file = open(dest+'who_comments_post','w')
-comment_count_file = open(dest+'comment_count','a')
-share_file = open(dest+'share_count','a')
+comment_count_file = open(dest+'comment_count','w')
+share_file = open(dest+'share_count','w')
 
 for share in share_count:
 	share_file.write(share + ',' + str(share_count[share]) + '\n')
